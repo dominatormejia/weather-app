@@ -139,8 +139,6 @@ input:active {
 }
 .weather-icon {
   width: 100px;
-  position: relative;
-  left: 8px;
 }
 .bottom,
 .left,
@@ -210,17 +208,36 @@ span {
   border-radius: 10px;
 }
 
-@media (max-width: 490px) {
+@media (max-width: 850px) {
+  .hidden-middle {
+    display: none;
+  }
+}
+
+@media (max-width: 725px) {
+  .hidden-smaller {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .hidden-small {
+    display: none;
+  }
+}
+@media (max-width: 500px) {
+  .hidden-mobile {
+    display: none;
+  }
+}
+
+@media (max-width: 450px) {
   .current {
-    top: 325px;
+    top: 455px;
     width: 40vh;
     height: 40vh;
   }
   .future-days:after {
     top: 80px;
-  }
-  .hidden-mobile {
-    display: none;
   }
   .weather-icon {
     left: 0px;
