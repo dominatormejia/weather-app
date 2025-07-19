@@ -240,7 +240,7 @@ span {
 
 @media (max-width: 450px) {
   .current {
-    top: 455px;
+    top: 355px;
     width: 40vh;
     height: 40vh;
   }
