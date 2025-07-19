@@ -5,6 +5,7 @@ import rainyDay from "./media/rainy-day.png";
 import sunnyVideo from "./media/sunnyVideo.mp4";
 import rainyVideo from "./media/rainyVideo.mp4";
 import partlyCloudyVideo from "./media/partlyCloudy.mp4";
+import { getDay } from "date-fns";
 
 export function displayCurrentDarkMedia(icon) {
   const imgs = document.querySelectorAll(".today-icon");
@@ -49,34 +50,43 @@ export function displayHourlyInformation(input, data) {
   const hourWrapper = document.querySelector(".future-hours");
 
   for (let i = input + 1; i <= input + 8; i++) {
-    if (data.days[0].hours[i]) {
-      //   console.log(data.days[0].hours[i]);
-      const div = document.createElement("div");
-      const img = document.createElement("img");
-      const span = document.createElement("span");
-      const para = document.createElement("p");
-      div.classList.add("hours");
-      img.classList.add("small-weather-icon");
+    if (!data.days[0].hours[i]) break;
 
-      img.src = partlyCloudyDay;
-      const roundedTemp = Math.round(data.days[0].hours[i].temp);
-      span.textContent = `${roundedTemp}°`;
+    const div = document.createElement("div");
+    const img = document.createElement("img");
+    const span = document.createElement("span");
+    const para = document.createElement("p");
+    div.classList.add("hours");
+    img.classList.add("small-weather-icon");
 
-      if (i >= 12) {
-        let time = i - 12;
-        para.textContent = `${time} PM`;
-      } else {
-        let time = i;
-        para.textContent = `${time} AM`;
-      }
+    const dayIcons = displayDailyandHourlyMedia(data.days[0].hours[i], data);
+    if (dayIcons) {
+      img.src = dayIcons;
+    } else {
+      console.warn("Missing icon for:", data.days[0].hours[i].icon);
+    }
 
-      if (i >= input + 6) {
-        div.classList.add("hidden-mobile");
-      }
-      div.appendChild(img);
-      div.appendChild(span);
-      div.appendChild(para);
-      hourWrapper.appendChild(div);
+    const roundedTemp = Math.round(data.days[0].hours[i].temp);
+    span.textContent = `${roundedTemp}°`;
+
+    if (i >= 12) {
+      let time = i - 12;
+      para.textContent = `${time} PM`;
+    } else {
+      let time = i;
+      para.textContent = `${time} AM`;
+    }
+
+    if (i >= input + 6) {
+      div.classList.add("hidden-mobile");
+    }
+    div.appendChild(img);
+    div.appendChild(span);
+    div.appendChild(para);
+    hourWrapper.appendChild(div);
+
+    if (i === 23) {
+      break;
     }
   }
 }
@@ -85,7 +95,6 @@ export function displayDailyData(input) {
   const dayWrapper = document.querySelector(".future-days");
 
   for (let i = 1; i <= 6; i++) {
-    console.log(input[i]);
     const div = document.createElement("div");
     const img = document.createElement("img");
     const divWrapper = document.createElement("div");
@@ -95,15 +104,20 @@ export function displayDailyData(input) {
     const min = document.createElement("p");
 
     div.classList.add("days");
+
     img.classList.add("small-weather-icon");
-    img.src = sunnyDay;
-    span.textContent = "Day";
+
+    const dayIcons = displayDailyandHourlyMedia(input[i].icon);
+    img.src = dayIcons;
+
+    const daysOfWeek = getDaysofWeek(input[i].datetime);
+    span.textContent = daysOfWeek;
     divTempWrap.classList.add("temp-wrapper");
     max.classList.add("max");
     max.textContent = `${Math.round(input[i].tempmax)}°`;
     min.textContent = `${Math.round(input[i].tempmin)}°`;
 
-    if (i === 6) {
+    if (i === 5 || i === 6) {
       div.classList.add("hidden-middle");
     }
     if (i === 5) {
@@ -124,6 +138,46 @@ export function displayDailyData(input) {
     div.appendChild(divWrapper);
     dayWrapper.appendChild(div);
   }
+}
+function displayDailyandHourlyMedia(input, data) {
+  if (data) {
+    // console.log(input.datetime);
+    // console.log(data.days[0].sunrise);
+    // console.log(data.days[0].sunset);
+    if (
+      input.datetime <= data.days[0].sunrise &&
+      input.datetime >= data.days[0].sunset
+    ) {
+      return clearNight;
+    }
+  }
+  if (!input.icon) return sunnyDay;
+
+  if (input.icon === "clear-day") {
+    return sunnyDay;
+  }
+  if (input.icon === "partly-cloudy-day") {
+    return partlyCloudyDay;
+  }
+  if (input.icon.includes("rain")) {
+    return rainyDay;
+  }
+}
+
+function getDaysofWeek(input) {
+  const days = {
+    0: "Sunday",
+    1: "Monday",
+    2: "Tuesday",
+    3: "Wednesday",
+    4: "Thursday",
+    5: "Friday",
+    6: "Saturday",
+  };
+  let splitDate = input.split("-");
+  const date = new Date(splitDate[0], splitDate[1] - 1, splitDate[2]);
+  const dayNumber = getDay(date);
+  return days[dayNumber];
 }
 
 export function clearHours() {

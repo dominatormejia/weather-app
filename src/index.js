@@ -5,6 +5,7 @@ import {
   displayHourlyInformation,
   clearHours,
   displayDailyData,
+  displayDailyMedia,
 } from "./displayImgs";
 import { format } from "date-fns";
 
@@ -14,16 +15,25 @@ async function getWeather(input) {
   if (input) {
     search = input;
   }
+  try {
+    const key = "5E89832B6JDJ6VL66XZ36G4RK";
 
-  const key = "5E89832B6JDJ6VL66XZ36G4RK";
+    const response = await fetch(
+      `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${encodeURIComponent(search)}?unitGroup=us&key=${key}&contentType=json`,
+      { mode: "cors" },
+    );
 
-  const response = await fetch(
-    `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${encodeURIComponent(search)}?unitGroup=us&key=${key}&contentType=json`,
-    { mode: "cors" },
-  );
-  const responseJson = await response.json();
-
-  return responseJson;
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Error ${response.status}: ${response.statusText}\n${errorText}`,
+      );
+    }
+    const responseJson = await response.json();
+    return responseJson;
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 async function displayCurrent(search) {
