@@ -110,9 +110,12 @@ svg {
   left: 2px;
 }
 input:focus,
-input:active {
+input:active,
+input:hover {
   outline: none;
+  background-color: transparent;
 }
+
 .current {
   border-radius: 50%;
   width: 50vh;
@@ -133,6 +136,7 @@ input:active {
   outline: 20px solid rgb(0, 0, 0, 0.2);
   align-items: center;
   justify-items: center;
+  font-size: clamp(0.9rem, 0.5rem + 1vw, 2rem);
 }
 .top {
   grid-column: 1/4;
@@ -169,6 +173,7 @@ input:active {
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   padding-bottom: 10px;
   justify-items: center;
+  font-size: clamp(0.9rem, 0.5rem + 1vw, 1rem);
 }
 .future-days:after {
   content: " ";
@@ -197,6 +202,7 @@ span {
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  font-size: clamp(0.9rem, 0.5rem + 1vw, 2rem);
 }
 .hours {
   display: flex;
@@ -248,5 +254,8 @@ span {
   }
   .hours {
     width: 75px;
+  }
+  input {
+    width: 50vw;
   }
 }

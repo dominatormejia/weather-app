@@ -5,9 +5,9 @@ import {
   displayHourlyInformation,
   clearHours,
   displayDailyData,
-  displayDailyMedia,
+  clearDays,
 } from "./displayImgs";
-import { format } from "date-fns";
+import { add, format } from "date-fns";
 
 async function getWeather(input) {
   let search = "Chino";
@@ -16,7 +16,7 @@ async function getWeather(input) {
     search = input;
   }
   try {
-    const key = "5E89832B6JDJ6VL66XZ36G4RK";
+    const key = "7FQ95UCN9YWCKQQN2SGNXLLWG";
 
     const response = await fetch(
       `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${encodeURIComponent(search)}?unitGroup=us&key=${key}&contentType=json`,
@@ -69,7 +69,17 @@ async function displayCurrent(search) {
   if (data.alerts[0]) {
     event.textContent = `${data.alerts[0].event}`;
   }
-  currentTime.textContent = format(new Date(), "hh:mm a");
+
+  console.log(data.tzoffset);
+  const offset = data.tzoffset;
+  const localDate = new Date();
+  const utcDate = add(localDate, {
+    minutes: localDate.getTimezoneOffset(),
+  });
+  const targetDate = add(utcDate, {
+    hours: offset,
+  });
+  currentTime.textContent = format(targetDate, "h:mm a");
 
   input.value = `${data.resolvedAddress}`;
 }
@@ -112,6 +122,7 @@ window.addEventListener("load", () => {
   displayCurrent();
   displayIcon();
   displayHours();
+  displayDays();
 });
 
 (function submit() {
@@ -125,10 +136,10 @@ window.addEventListener("load", () => {
     displayIcon(input.value);
     clearHours();
     displayHours(input.value);
+    clearDays();
+    displayDays(input.value);
     getWeather(input.value).then((response) => {
       console.log(response);
     });
   });
 })();
-
-displayDays();

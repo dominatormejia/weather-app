@@ -2,17 +2,79 @@ import clearNight from "./media/clear-night.png";
 import partlyCloudyDay from "./media/partly-cloudy-day.png";
 import sunnyDay from "./media/sunny.png";
 import rainyDay from "./media/rainy-day.png";
+import partlyCloudyNight from "./media/partly-cloudy-night.png";
+import fogDay from "./media/fog.png";
+import fogNight from "./media/foggy-night.png";
+import windyDay from "./media/windyDay.png";
+import windyNight from "./media/windyNight.png";
+import snowy from "./media/snowy.png";
+
 import sunnyVideo from "./media/sunnyVideo.mp4";
 import rainyVideo from "./media/rainyVideo.mp4";
 import partlyCloudyVideo from "./media/partlyCloudy.mp4";
+import clearNightVideo from "./media/clearNightVideoTwo.mp4";
+import cloudyNightVideo from "./media/partlyCloudyVideo.mp4";
+import rainyNightVideo from "./media/rainyNightVideo.mp4";
+import foggyNightVideo from "./media/foggyNightVideo.mp4";
+import foggyDayVideo from "./media/foggyDayVideo.mp4";
+import snowyDay from "./media/snowyDay.mp4";
+import snowyNight from "./media/snowyNight.mp4";
+
 import { getDay } from "date-fns";
 
 export function displayCurrentDarkMedia(icon) {
   const imgs = document.querySelectorAll(".today-icon");
+  const source = document.querySelector("source");
+  const video = document.querySelector("video");
 
-  imgs.forEach((imgs) => {
-    imgs.src = clearNight;
-  });
+  if (icon === "clear-night") {
+    imgs.forEach((imgs) => {
+      imgs.src = clearNight;
+    });
+    source.src = clearNightVideo;
+    video.load();
+    return;
+  }
+  if (icon === "partly-cloudy-night" || icon === "cloudy") {
+    imgs.forEach((imgs) => {
+      imgs.src = partlyCloudyNight;
+    });
+    source.src = cloudyNightVideo;
+    video.load();
+    return;
+  }
+  if (icon.includes("rain")) {
+    imgs.forEach((imgs) => {
+      imgs.src = rainyDay;
+    });
+    source.src = rainyNightVideo;
+    video.load();
+    return;
+  }
+  if (icon === "fog") {
+    imgs.forEach((imgs) => {
+      imgs.src = fogNight;
+    });
+    source.src = foggyNightVideo;
+    video.load();
+    return;
+  }
+  if (icon === "wind") {
+    imgs.forEach((imgs) => {
+      imgs.src = windyNight;
+    });
+    source.src = cloudyNightVideo;
+    video.load();
+    return;
+  }
+  if (icon === "snow") {
+    imgs.forEach((imgs) => {
+      imgs.src = snowy;
+    });
+    source.src = snowyNight;
+    video.load();
+    return;
+  }
 }
 
 export function displayCurrentLightMedia(icon) {
@@ -28,7 +90,7 @@ export function displayCurrentLightMedia(icon) {
     video.load();
     return;
   }
-  if (icon === "partly-cloudy-day") {
+  if (icon === "partly-cloudy-day" || icon === "cloudy") {
     imgs.forEach((imgs) => {
       imgs.src = partlyCloudyDay;
     });
@@ -41,6 +103,30 @@ export function displayCurrentLightMedia(icon) {
       imgs.src = rainyDay;
     });
     source.src = rainyVideo;
+    video.load();
+    return;
+  }
+  if (icon === "fog") {
+    imgs.forEach((imgs) => {
+      imgs.src = fogDay;
+    });
+    source.src = foggyDayVideo;
+    video.load();
+    return;
+  }
+  if (icon === "wind") {
+    imgs.forEach((imgs) => {
+      imgs.src = windyDay;
+    });
+    source.src = partlyCloudyVideo;
+    video.load();
+    return;
+  }
+  if (icon === "snow") {
+    imgs.forEach((imgs) => {
+      imgs.src = snowy;
+    });
+    source.src = snowyDay;
     video.load();
     return;
   }
@@ -69,8 +155,11 @@ export function displayHourlyInformation(input, data) {
     const roundedTemp = Math.round(data.days[0].hours[i].temp);
     span.textContent = `${roundedTemp}°`;
 
-    if (i >= 12) {
+    if (i > 12) {
       let time = i - 12;
+      para.textContent = `${time} PM`;
+    } else if (i === 12) {
+      let time = i;
       para.textContent = `${time} PM`;
     } else {
       let time = i;
@@ -107,9 +196,12 @@ export function displayDailyData(input) {
 
     img.classList.add("small-weather-icon");
 
-    const dayIcons = displayDailyandHourlyMedia(input[i].icon);
-    img.src = dayIcons;
-
+    const dayIcons = displayDailyandHourlyMedia(input[i], null);
+    if (dayIcons) {
+      img.src = dayIcons;
+    } else {
+      console.warn("Missing icon for:", input[i].icon);
+    }
     const daysOfWeek = getDaysofWeek(input[i].datetime);
     span.textContent = daysOfWeek;
     divTempWrap.classList.add("temp-wrapper");
@@ -141,26 +233,31 @@ export function displayDailyData(input) {
 }
 function displayDailyandHourlyMedia(input, data) {
   if (data) {
-    // console.log(input.datetime);
-    // console.log(data.days[0].sunrise);
-    // console.log(data.days[0].sunset);
-    if (
-      input.datetime <= data.days[0].sunrise &&
-      input.datetime >= data.days[0].sunset
-    ) {
-      return clearNight;
+    const datetime = parseInt(input.datetime);
+    const sunrise = parseInt(data.days[0].sunrise);
+    const sunset = parseInt(data.days[0].sunset);
+
+    if (datetime <= sunrise || datetime >= sunset) {
+      if (input.icon === "clear-night") {
+        return clearNight;
+      } else if (input.icon === "partly-cloudy-night") {
+        return partlyCloudyNight;
+      }
     }
   }
-  if (!input.icon) return sunnyDay;
 
-  if (input.icon === "clear-day") {
-    return sunnyDay;
-  }
-  if (input.icon === "partly-cloudy-day") {
-    return partlyCloudyDay;
-  }
-  if (input.icon.includes("rain")) {
-    return rainyDay;
+  const icon = input.icon;
+
+  if (icon) {
+    if (icon === "clear-day") {
+      return sunnyDay;
+    }
+    if (icon === "partly-cloudy-day" || input.icon === "cloudy") {
+      return partlyCloudyDay;
+    }
+    if (icon.includes("rain")) {
+      return rainyDay;
+    }
   }
 }
 
@@ -185,5 +282,12 @@ export function clearHours() {
 
   while (hourWrapper.firstElementChild) {
     hourWrapper.removeChild(hourWrapper.firstElementChild);
+  }
+}
+export function clearDays() {
+  const dayWrapper = document.querySelector(".future-days");
+
+  while (dayWrapper.children[1]) {
+    dayWrapper.removeChild(dayWrapper.lastChild);
   }
 }
