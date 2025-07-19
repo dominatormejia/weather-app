@@ -9,7 +9,7 @@ import windyDay from "./media/windyDay.png";
 import windyNight from "./media/windyNight.png";
 import snowy from "./media/snowy.png";
 
-import sunnyVideo from "./media/sunnyVideo.mp4";
+import sunnyVideo from "./media/sunnyDatTwo.mp4";
 import rainyVideo from "./media/rainyVideo.mp4";
 import partlyCloudyVideo from "./media/partlyCloudy.mp4";
 import clearNightVideo from "./media/clearNightVideoTwo.mp4";
