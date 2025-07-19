@@ -240,7 +240,7 @@ span {
 
 @media (max-width: 450px) {
   .current {
-    top: 355px;
+    top: 475px;
     width: 40vh;
     height: 40vh;
   }
@@ -259,5 +259,15 @@ span {
   }
   input {
     width: 50vw;
+  }
+}
+@media (max-width: 400px) {
+  .current {
+    top: 300px;
+    width: 40vh;
+    height: 40vh;
+  }
+  .future-hours {
+    margin-right: 10px;
   }
 }

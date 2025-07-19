@@ -166,7 +166,7 @@ export function displayHourlyInformation(input, data) {
       para.textContent = `${time} AM`;
     }
 
-    if (i >= input + 6) {
+    if (i >= input + 5) {
       div.classList.add("hidden-mobile");
     }
     div.appendChild(img);
